@@ -1,5 +1,17 @@
+
+
+
+@extends('adminlte::page')
+
+@section('title', 'Register')
+
+@section('content_header')
+    <h1>Register</h1>
+@stop
+
+@section('content')
 <x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
+    <form method="POST" action="{{ route('admin.register') }}">
         @csrf
 
         <!-- Name -->
@@ -50,3 +62,13 @@
         </div>
     </form>
 </x-guest-layout>
+@stop
+
+@section('css')
+    {{-- Add here extra stylesheets --}}
+    {{-- <link rel="stylesheet" href="/css/admin_custom.css"> --}}
+@stop
+
+@section('js')
+    <script> console.log("Hi, I'm using the Laravel-AdminLTE package!"); </script>
+@stop
