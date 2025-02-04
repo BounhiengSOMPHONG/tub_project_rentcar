@@ -1,10 +1,9 @@
 <?php
-
 namespace App\Providers;
 
-use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 
@@ -17,7 +16,27 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    public const HOME = '/dashboard';
+    public const HOME = '/admin/dashboard';
+
+    /**
+     * Determine the home route based on the user's role.
+     *
+     * @return string
+     */
+    public static function redirectTo(): string
+    {
+        if (Auth::check()) {
+            // Adjust the property name (e.g., role) as per your User model
+            if (Auth::user()->role == 'admin') {
+                return '/admin/dashboard';
+            } elseif (Auth::user()->role == 'manager') {
+                return '/manager/index';
+            }
+        }
+        
+        // Default redirection if not logged in or no role matches
+        return '/login';
+    }
 
     /**
      * Define your route model bindings, pattern filters, and other route configuration.
@@ -42,7 +61,8 @@ class RouteServiceProvider extends ServiceProvider
     protected function configureRateLimiting(): void
     {
         RateLimiter::for('api', function (Request $request) {
-            return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
+            return \Illuminate\Cache\RateLimiting\Limit::perMinute(60)
+                ->by($request->user()?->id ?: $request->ip());
         });
     }
 }
